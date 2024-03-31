@@ -1,4 +1,4 @@
-﻿namespace QuestPDFTesting1
+﻿namespace QuestPDFTesting1.Entities
 {
     public class CinemaTicket
     {

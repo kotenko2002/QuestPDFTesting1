@@ -63,7 +63,7 @@ namespace QuestPDFTesting1
 
             var products = new List<Product> {
                 new Product { Id = Guid.NewGuid(), Cinema = cinema, Name = "Beer", Price = 60, Amount = 5, SoldAmount = 4, IncomeAmount = 10, IsDeleted = false },
-                new Product { Id = Guid.NewGuid(), Cinema = cinema, Name = "Ham and Cheese Sandwich", Price = 150, Amount = 3, SoldAmount = 8, IncomeAmount = 15, IsDeleted = false },
+                new Product { Id = Guid.NewGuid(), Cinema = cinema, Name = "Super Ham and Cheese Sandwich XXXL + Double Extra Meat", Price = 150, Amount = 3, SoldAmount = 8, IncomeAmount = 15, IsDeleted = false },
                 new Product { Id = Guid.NewGuid(), Cinema = cinema, Name = "Popcorn", Price = 100, Amount = 6, SoldAmount = 7, IncomeAmount = 5, IsDeleted = false },
                 new Product { Id = Guid.NewGuid(), Cinema = cinema, Name = "Cola", Price = 25, Amount = 6, SoldAmount = 15, IncomeAmount = 20, IsDeleted = false },
                 new Product { Id = Guid.NewGuid(), Cinema = cinema, Name = "Hot Dog", Price = 125, Amount = 6, SoldAmount = 3, IncomeAmount = 0, IsDeleted = false }
@@ -73,8 +73,8 @@ namespace QuestPDFTesting1
 
             var films = new List<Film>
             {
-                new Film { Id = Guid.NewGuid(), Name = "Film #1", Duration = TimeSpan.FromHours(2), Cinema = cinema, Sessions = new List<Session>(), IsDeleted = false },
-                new Film { Id = Guid.NewGuid(), Name = "Film #2", Duration = TimeSpan.FromHours(1.5), Cinema = cinema, Sessions = new List<Session>(), IsDeleted = false }
+                new Film { Id = Guid.NewGuid(), Name = "The Shawshank Redemption", Duration = TimeSpan.FromHours(2), Cinema = cinema, Sessions = new List<Session>(), IsDeleted = false },
+                new Film { Id = Guid.NewGuid(), Name = "Fight Club", Duration = TimeSpan.FromHours(1.5), Cinema = cinema, Sessions = new List<Session>(), IsDeleted = false }
             };
             foreach (var film in films)
                 cinema.Films.Add(film);
@@ -89,8 +89,8 @@ namespace QuestPDFTesting1
 
             var sessions = new List<Session>
             {
-                new Session { Id = Guid.NewGuid(), StartDateTime = DateTime.UtcNow, Hall = halls[0], Film = films[0], Tickets = new List<Ticket>() },
-                new Session { Id = Guid.NewGuid(), StartDateTime = DateTime.UtcNow.AddHours(3), Hall = halls[1], Film = films[1], Tickets = new List<Ticket>() }
+                new Session { Id = Guid.NewGuid(), StartDateTime = DateTime.UtcNow, Hall = halls[0], Film = films[0], Tickets = new List<Ticket>(), Price = 125 },
+                new Session { Id = Guid.NewGuid(), StartDateTime = DateTime.UtcNow.AddHours(3), Hall = halls[1], Film = films[1], Tickets = new List<Ticket>(), Price = 145 }
             };
             halls[0].Sessions.Add(sessions[0]);
             halls[1].Sessions.Add(sessions[1]);
@@ -106,7 +106,13 @@ namespace QuestPDFTesting1
                         var seat = new HallSeat { Id = Guid.NewGuid(), Hall = halls[i], Row = row, Column = col, Status = HallSeatStatus.Available, Tickets = new List<Ticket>() };
                         halls[i].Seats.Add(seat);
 
-                        var ticket = new Ticket { Id = Guid.NewGuid(), CreationTime = DateTime.UtcNow, Status = TicketStatus.Booked, Session = sessions[i], Seat = seat };
+                        var ticket = new Ticket {
+                            Id = Guid.NewGuid(),
+                            CreationTime = DateTime.UtcNow,
+                            Status = new Random().Next(0, 2) == 0 ? TicketStatus.Sold : TicketStatus.Booked,
+                            Session = sessions[i],
+                            Seat = seat
+                        };
                         sessions[i].Tickets.Add(ticket);
                         seat.Tickets.Add(ticket);
                     }

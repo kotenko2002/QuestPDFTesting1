@@ -1,8 +1,9 @@
 ﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDFTesting1.Entities;
 
-namespace QuestPDFTesting1
+namespace QuestPDFTesting1.PdfGeneration
 {
     public class CinemaTicketDocument : IDocument
     {
