@@ -2,6 +2,7 @@
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDFTesting1.Entities;
+using System.Reflection.PortableExecutable;
 
 namespace QuestPDFTesting1.PdfGeneration
 {
@@ -25,7 +26,6 @@ namespace QuestPDFTesting1.PdfGeneration
                 page.Size(PageSizes.A4);
                 page.Margin(1, Unit.Centimetre);
 
-                page.Header().Element(ComposeHeader);
                 page.Content().Element(ComposeContent);
                 page.Footer().AlignCenter().Text(x =>
                 {
@@ -34,11 +34,6 @@ namespace QuestPDFTesting1.PdfGeneration
                     x.TotalPages();
                 });
             });
-        }
-
-        private void ComposeHeader(IContainer container)
-        {
-            
         }
 
         private void ComposeContent(IContainer container)
@@ -59,6 +54,28 @@ namespace QuestPDFTesting1.PdfGeneration
                         AddInfoSection(innerColumn, "Shift started in: ", _workday.StartDateTime.ToString("dd/MM/yyyy HH:mm"));
                         AddInfoSection(innerColumn, "Shift finished in: ", _workday.EndDateTime.Value.ToString("dd/MM/yyyy HH:mm"));
                         AddInfoSection(innerColumn, "Profit: ", _profit.ToString());
+                    });
+                });
+
+                column.Item().Column(productsSection =>
+                {
+                    productsSection.Item().Background(Colors.Grey.Medium).Height(30).AlignCenter().AlignMiddle().Text("General").FontSize(20).FontFamily("Arial").FontColor(Colors.White);
+
+                    productsSection.Item().Background(Colors.Grey.Lighten3).Padding(10).Table(table =>
+                    {
+                        var headerStyle = TextStyle.Default.SemiBold();
+
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn();
+                        });
+
+                        AddInfoSectionAsCell(table, "Cinema name: ", _workday.Cinema.Name);
+                        AddInfoSectionAsCell(table, "Cinema address: ", _workday.Cinema.Adress);
+                        AddInfoSectionAsCell(table, "Worker name: ", $"{_workday.User.LastName} {_workday.User.FisrtName}");
+                        AddInfoSectionAsCell(table, "Shift started in: ", _workday.StartDateTime.ToString("dd/MM/yyyy HH:mm"));
+                        AddInfoSectionAsCell(table, "Shift finished in: ", _workday.EndDateTime.Value.ToString("dd/MM/yyyy HH:mm"));
+                        AddInfoSectionAsCell(table, "Profit: ", _profit.ToString());
                     });
                 });
 
@@ -142,8 +159,8 @@ namespace QuestPDFTesting1.PdfGeneration
                         {
                             table.Cell().Element(CellStyle).Text($"{index}");
                             table.Cell().Element(CellStyle).AlignMiddle().Text(session.Film.Name);
-                            table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text($"{session.StartDateTime}");
-                            table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text($"{session.StartDateTime + session.Film.Duration}");
+                            table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text($"{session.StartDateTime.ToString("dd/MM/yyyy HH:mm")}");
+                            table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text($"{(session.StartDateTime + session.Film.Duration).ToString("dd/MM/yyyy HH:mm")}");
                             table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text($"{session.Tickets.Count(s => s.Status == TicketStatus.Sold)}");
                             table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text($"{session.Tickets.Count(s => s.Status == TicketStatus.Booked)}");
                             table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text($"{session.Price}$");
@@ -164,6 +181,17 @@ namespace QuestPDFTesting1.PdfGeneration
                 text.Span(title).Bold();
                 text.Span(value);
             });
+        }
+
+        private void AddInfoSectionAsCell(TableDescriptor table, string title, string value)
+        {
+            table.Cell().Element(CellStyle).Text(text =>
+            {
+                text.Span(title).Bold();
+                text.Span(value);
+            });
+
+            static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
         }
 
         private static void CellStyle(IContainer container)
