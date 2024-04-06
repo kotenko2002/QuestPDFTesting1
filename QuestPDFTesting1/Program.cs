@@ -1,6 +1,8 @@
-﻿using QuestPDF.Previewer;
+﻿using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
 using QuestPDFTesting1.Entities;
 using QuestPDFTesting1.PdfGeneration;
+using QuestPDFTesting1.PdfGeneration.WorkdayReport;
 
 namespace QuestPDFTesting1
 {
@@ -8,12 +10,14 @@ namespace QuestPDFTesting1
     {
         static void Main(string[] args)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
             Workday workday = SeedData.GetExtendedInitializedWorkday2();
 
-            var document = new WorkDayReportDocument(workday, 980);
+            //var document = new WorkDayReportDocument(workday, 980)
+            var document = new WorkdayReportProd(workday, 980);
             document.ShowInPreviewer();
-            //QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-            //QuestPDF.Settings.License = LicenseType.Community;
+
+
 
             //var ticket = new CinemaTicket
             //{

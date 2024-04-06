@@ -2,9 +2,8 @@
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDFTesting1.Entities;
-using System.Reflection.PortableExecutable;
 
-namespace QuestPDFTesting1.PdfGeneration
+namespace QuestPDFTesting1.PdfGeneration.WorkdayReport
 {
     public class WorkDayReportDocument : IDocument
     {
@@ -192,11 +191,6 @@ namespace QuestPDFTesting1.PdfGeneration
             });
 
             static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
-        }
-
-        private static void CellStyle(IContainer container)
-        {
-            container.BorderBottom(1).BorderColor("#CCCCCC").Padding(5);
         }
     }
 }
