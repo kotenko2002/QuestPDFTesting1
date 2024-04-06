@@ -5,7 +5,7 @@ using QuestPDFTesting1.Entities;
 
 namespace QuestPDFTesting1.PdfGeneration.WorkdayReport.Components
 {
-    internal class ProductsSection : IComponent
+    public class ProductsSection : SectionBase
     {
         private readonly List<Product> _products;
 
@@ -14,53 +14,59 @@ namespace QuestPDFTesting1.PdfGeneration.WorkdayReport.Components
             _products = products;
         }
 
-        public void Compose(IContainer container)
+        public override void Compose(IContainer container)
         {
             container.Column(column =>
             {
-                column.Item().Column(productsSection =>
+                column
+                    .Item()
+                    .Component(new SectionHeader("Products"));
+
+                column.Item().Background(Colors.Grey.Lighten3).Padding(10).Table(table =>
                 {
-                    productsSection.Item().Background(Colors.Grey.Medium).Height(30).AlignCenter().AlignMiddle().Text("Products").FontSize(20).FontFamily("Arial").FontColor(Colors.White);
-
-                    productsSection.Item().Background(Colors.Grey.Lighten3).Padding(10).Table(table =>
+                    table.ColumnsDefinition(columns =>
                     {
-                        var headerStyle = TextStyle.Default.SemiBold();
-
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.ConstantColumn(25);
-                            columns.RelativeColumn(2);
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                        });
-
-                        table.Header(header =>
-                        {
-                            header.Cell().Text("#");
-                            header.Cell().Text("Product").Style(headerStyle);
-                            header.Cell().AlignCenter().Text("Amount").Style(headerStyle);
-                            header.Cell().AlignCenter().Text("Income").Style(headerStyle);
-                            header.Cell().AlignCenter().Text("Sold").Style(headerStyle);
-                            header.Cell().AlignCenter().Text("Unit price").Style(headerStyle);
-                        });
-
-                        int index = 1;
-                        foreach (var product in _products)
-                        {
-                            table.Cell().Element(CellStyle).Text($"{index}");
-                            table.Cell().Element(CellStyle).Text(product.Name);
-                            table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text(product.Amount.ToString());
-                            table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text(product.IncomeAmount.ToString());
-                            table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text(product.SoldAmount.ToString());
-                            table.Cell().Element(CellStyle).AlignCenter().AlignMiddle().Text($"{product.Price}$");
-
-                            index++;
-
-                            static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
-                        }
+                        columns.ConstantColumn(25);
+                        columns.RelativeColumn(2);
+                        columns.RelativeColumn();
+                        columns.RelativeColumn();
+                        columns.RelativeColumn();
+                        columns.RelativeColumn();
                     });
+
+                    table.Header(header =>
+                    {
+                        header.Cell().Text("#");
+                        header.Cell().Text("Product").Bold();
+                        header.Cell().AlignCenter().Text("Amount").Bold();
+                        header.Cell().AlignCenter().Text("Income").Bold();
+                        header.Cell().AlignCenter().Text("Sold").Bold();
+                        header.Cell().AlignCenter().Text("Unit price").Bold();
+                    });
+
+                    int index = 1;
+                    foreach (var product in _products)
+                    {
+                        table.Cell().Element(CellStyle).AlignMiddle()
+                            .Text($"{index}");
+
+                        table.Cell().Element(CellStyle).AlignMiddle()
+                            .Text(product.Name);
+
+                        table.Cell().Element(CellStyle).AlignCenter().AlignMiddle()
+                            .Text(product.Amount.ToString());
+
+                        table.Cell().Element(CellStyle).AlignCenter().AlignMiddle()
+                            .Text(product.IncomeAmount.ToString());
+
+                        table.Cell().Element(CellStyle).AlignCenter().AlignMiddle()
+                            .Text(product.SoldAmount.ToString());
+
+                        table.Cell().Element(CellStyle).AlignCenter().AlignMiddle()
+                            .Text($"{product.Price}$");
+
+                        index++;
+                    }
                 });
             });
         }

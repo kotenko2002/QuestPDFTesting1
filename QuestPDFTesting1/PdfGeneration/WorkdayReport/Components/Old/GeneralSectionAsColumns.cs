@@ -3,7 +3,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDFTesting1.Entities;
 
-namespace QuestPDFTesting1.PdfGeneration.WorkdayReport.Components
+namespace QuestPDFTesting1.PdfGeneration.WorkdayReport.Components.Old
 {
     public class GeneralSectionAsColumns : IComponent
     {
@@ -18,11 +18,13 @@ namespace QuestPDFTesting1.PdfGeneration.WorkdayReport.Components
 
         public void Compose(IContainer container)
         {
-            container.Column(generalSection =>
+            container.Column(column =>
             {
-                generalSection.Item().Background(Colors.Grey.Medium).Height(30).AlignCenter().AlignMiddle().Text("General").FontSize(20).FontFamily("Arial").FontColor(Colors.White);
+                column
+                    .Item()
+                    .Component(new SectionHeader("General"));
 
-                generalSection.Item().Background(Colors.Grey.Lighten3).Padding(10).Column(innerColumn =>
+                column.Item().Background(Colors.Grey.Lighten3).Padding(10).Column(innerColumn =>
                 {
                     AddInfoSection(innerColumn, "Cinema name: ", _workday.Cinema.Name);
                     AddInfoSection(innerColumn, "Cinema address: ", _workday.Cinema.Adress);

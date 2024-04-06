@@ -5,7 +5,7 @@ using QuestPDFTesting1.Entities;
 
 namespace QuestPDFTesting1.PdfGeneration.WorkdayReport.Components
 {
-    public class GeneralSectionAsTable : IComponent
+    public class GeneralSectionAsTable : SectionBase
     {
         private readonly Workday _workday;
         private readonly decimal _profit;
@@ -16,25 +16,35 @@ namespace QuestPDFTesting1.PdfGeneration.WorkdayReport.Components
             _profit = profit;
         }
 
-        public void Compose(IContainer container)
+        public override void Compose(IContainer container)
         {
-            container.Column(generalSection =>
+            container.Column(column =>
             {
-                generalSection.Item().Background(Colors.Grey.Medium).Height(30).AlignCenter().AlignMiddle().Text("General").FontSize(20).FontFamily("Arial").FontColor(Colors.White);
+                column
+                    .Item()
+                    .Component(new SectionHeader("General"));
 
-                generalSection.Item().Background(Colors.Grey.Lighten3).Padding(10).Table(table =>
+                column.Item().Background(Colors.Grey.Lighten3).Padding(10).Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
                     {
                         columns.RelativeColumn();
                     });
 
-                    AddInfoSectionAsCell(table, "Cinema name: ", _workday.Cinema.Name);
-                    AddInfoSectionAsCell(table, "Cinema address: ", _workday.Cinema.Adress);
-                    AddInfoSectionAsCell(table, "Worker name: ", $"{_workday.User.LastName} {_workday.User.FisrtName}");
-                    AddInfoSectionAsCell(table, "Shift started in: ", _workday.StartDateTime.ToString("dd/MM/yyyy HH:mm"));
-                    AddInfoSectionAsCell(table, "Shift finished in: ", _workday.EndDateTime.Value.ToString("dd/MM/yyyy HH:mm"));
-                    AddInfoSectionAsCell(table, "Profit: ", _profit.ToString());
+                    Dictionary<string, string> items = new Dictionary<string, string>()
+                    {
+                        {"Cinema name", _workday.Cinema.Name},
+                        {"Cinema address", _workday.Cinema.Adress},
+                        {"Worker name", $"{_workday.User.LastName} {_workday.User.FisrtName}"},
+                        {"Shift started in", _workday.StartDateTime.ToString("dd/MM/yyyy HH:mm")},
+                        {"Shift finished in", FormatNullableDateTime(_workday.EndDateTime, "dd/MM/yyyy HH:mm")},
+                        {"Profit", _profit.ToString()},
+                    };
+
+                    foreach (var item in items)
+                    {
+                        AddInfoSectionAsCell(table, item.Key, item.Value);
+                    }
                 });
             });
         }
@@ -44,10 +54,12 @@ namespace QuestPDFTesting1.PdfGeneration.WorkdayReport.Components
             table.Cell().Element(CellStyle).Text(text =>
             {
                 text.Span(title).Bold();
+                text.Span(": ").Bold();
                 text.Span(value);
             });
-
-            static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
         }
+
+        private static string FormatNullableDateTime(DateTime? dateTime, string format)
+            => dateTime?.ToString(format) ?? "N/A";
     }
 }
